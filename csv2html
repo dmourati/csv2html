@@ -69,48 +69,56 @@ $datetime = "<p>" . scalar localtime(time) . "</p>" if defined($opt_d);
 $firstline = 1;  # Set a flag for use with bold/center header
 
 &print_html_header unless $opt_T;
-print OUTFILE ("<table border=1>\n");  # Open the first table
+#print OUTFILE ("<table border=1>\n");  # Open the first table
 
+my %count;
 while ($aline = <INFILE>) {       # While we have input
     chomp($aline);                # Remove trailing line breaks
 
-    if ($aline =~ m/^\s*$/) {   # If the line is blank or has only white space
-        print OUTFILE ("</table>\n");         # End the previous table
-        print OUTFILE ("\n<br>\n\n");         # Line break
-        print OUTFILE ("<table border=1>\n"); # Start the next table
-        $firstline = 1;  # Set a flag for use with bold/center header
-        next;  # Skip to next record
-    } # end of new table?
+#    if ($aline =~ m/^\s*$/) {   # If the line is blank or has only white space
+#        print OUTFILE ("</table>\n");         # End the previous table
+#        print OUTFILE ("\n<br>\n\n");         # Line break
+#        print OUTFILE ("<table border=1>\n"); # Start the next table
+#        $firstline = 1;  # Set a flag for use with bold/center header
+#        next;  # Skip to next record
+#    } # end of new table?
 
 
-    if ($opt_D) {   # We're using a delimiter
-        @arecord = split(/$opt_D/, $aline);  # Parse the delimited input
-    } else {        # We're doing CSV
+#    if ($opt_D) {   # We're using a delimiter
+#        @arecord = split(/$opt_D/, $aline);  # Parse the delimited input
+#    } else {        # We're doing CSV
         @arecord = &parse_csv_mre2 ($aline); # Parse the CSV input
-    } # end of if we're using a delimiter or CSV
+#    } # end of if we're using a delimiter or CSV
 
-    print OUTFILE ("  <tr>\n");   # Start an HTML table row
-
-    foreach $field (@arecord) {   # For each output field
+#    foreach $field (@arecord) {   # For each output field
         # Inset a non-breaking space if needed to force the cell to print
-        $field = "&nbsp;" if (($opt_e) and ($field eq ""));
+#        $field = "&nbsp;" if (($opt_e) and ($field eq ""));
 
-        if ($opt_b) {             # If we're doing bold/center
-            if ($firstline) {     # And it's the first line
+#        if ($opt_b) {             # If we're doing bold/center
+#            if ($firstline) {     # And it's the first line
                 # Make it bold and centered
-                print OUTFILE ("    <td align=\"center\"><b>$field</b></td>\n");
-            } else {              # Otherwise, make it normal
-                print OUTFILE ("    <td>$field</td>\n");
-            } # end of if firstline
-        } else {                  # Otherwise, make it normal
-            print OUTFILE ("    <td>$field</td>\n");
-        } # end of if bold/center
-    } # end of foreach field
+#                print OUTFILE ("    <td align=\"center\"><b>$field</b></td>\n");
+#            } else {              # Otherwise, make it normal
+#                print OUTFILE ("    <td>$field</td>\n");
+#            } # end of if firstline
+#        } else {                  # Otherwise, make it normal
+#            print OUTFILE ("    $arecord[7], $arecord[78]\n");
+            foreach my $str ($arecord[78]) {
+              $count{$str}++;
+    }
+}
 
-    print OUTFILE ("  </tr>\n");  # End the HTML table row
+foreach my $str (sort keys %count) {
+    printf "%-31s %s\n", $str, $count{$str};
+}
+	    
+#        } # end of if bold/center
+#    } # end of foreach field
+
+#    print OUTFILE ("  </tr>\n");  # End the HTML table row
     $firstline = 0;               # It's not the first table row anymore
 
-} # end of while we have input
+#} # end of while we have input
 
 print OUTFILE ("</table>\n");   # End the last table
 &print_html_footer unless $opt_T;
@@ -125,8 +133,8 @@ sub parse_csv_mre2 {
 # page 271. See http://regex.info/ esp. http://regex.info/dlisting.cgi?id=1253)
 
     #if (@_[0] eq undef()) { warn ("$myname: empty variable passed to parse_csv_mre2!\n"); }
-    if (@_[0] eq undef()) { return(); }
-    my $line = @_[0];
+    if ($_[0] eq undef()) { return(); }
+    my $line = $_[0];
     my @parsedline = ();
     my $field = '';
 
