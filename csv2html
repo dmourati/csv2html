@@ -163,13 +163,17 @@ sub print_html_header {
 # HTML Header Code
 print OUTFILE <<"EOT";
 <html>
-<head>
-<title>$title</title>
-</head>
-<body>
-<h1>$title</h1>
-$datetime
+  <head>
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript">
+      google.load("visualization", "1.1", {packages:["calendar"]});
+      google.setOnLoadCallback(drawChart);
 
+   function drawChart() {
+       var dataTable = new google.visualization.DataTable();
+       dataTable.addColumn({ type: 'date', id: 'Date' });
+       dataTable.addColumn({ type: 'number', id: 'Won/Loss' });
+       dataTable.addRows([
 EOT
 
 } # end of sub html_header
@@ -180,8 +184,23 @@ sub print_html_footer {
 # HTML Footer Code
 print OUTFILE <<"EOT";
 
-</body>
+        ]);
+       var chart = new google.visualization.Calendar(document.getElementById('calendar_basic'));
+
+       var options = {
+         title: "Logins per Day Enterprise 127415",
+        height: 3500,
+       };
+
+       chart.draw(dataTable, options);
+   }
+    </script>
+  </head>
+  <body>
+    <div id="calendar_basic" style="width: 1000px; height: 3500px;"></div>
+  </body>
 </html>
+
 EOT
 
 } # end of sub html_footer
