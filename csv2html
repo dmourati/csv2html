@@ -109,7 +109,8 @@ while ($aline = <INFILE>) {       # While we have input
 }
 
 foreach my $str (sort keys %count) {
-    printf "%-31s %s\n", $str, $count{$str};
+    $str =~ /(\d+)\-(\d+)\-(\d+)/;
+    print"[ new Date(", $1,",", $2-1,",", $3, "),$count{$str} ]",",","\n";
 }
 	    
 #        } # end of if bold/center
@@ -120,7 +121,7 @@ foreach my $str (sort keys %count) {
 
 #} # end of while we have input
 
-print OUTFILE ("</table>\n");   # End the last table
+#print OUTFILE ("]\n");   # End the last table
 &print_html_footer unless $opt_T;
 
 if (! $opt_q) { print STDERR ("\n\a$myname finished in ",time()-$^T," seconds.\n"); }
